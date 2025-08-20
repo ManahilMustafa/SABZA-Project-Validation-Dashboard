@@ -1,9 +1,11 @@
-import { Button } from "@/components/ui/button"; // apna custom button (shadcn/ui)
+import { Button } from "@/components/ui/button"; // custom button
 import { useAuth0 } from "@auth0/auth0-react";
-import { User } from "lucide-react"; // icon from lucide
+import { User, LogOut } from "lucide-react"; // icons
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu"; // if using shadcn/ui
 
 export function Header() {
-  const { user } = useAuth0();
+  const { user, logout } = useAuth0();
+
   const getUserInitials = (user) => {
     if (user?.name) {
       return user.name
@@ -18,10 +20,19 @@ export function Header() {
     }
     return "AD";
   };
+
   const getDisplayName = (user) => {
     return (
       user?.name || user?.nickname || user?.email?.split("@")[0] || "Admin User"
     );
+  };
+
+  const handleLogout = () => {
+    logout({
+      logoutParams: {
+        returnTo: window.location.origin,
+      },
+    });
   };
 
   return (
@@ -31,10 +42,8 @@ export function Header() {
           <div>
             <img src="/logo.jpg" alt="SABZA Logo" className="h-16 w-19" />
           </div>
-          <div>
-            {/* <p className="text-lg  font-semibold text-gray-600">Project Validation Dashboard</p> */}
-          </div>
         </div>
+
         <div className="flex items-center gap-3">
           {user?.picture ? (
             <img
@@ -47,9 +56,21 @@ export function Header() {
               {getUserInitials(user)}
             </div>
           )}
-          {/* <Button size="sm" className="bg-green-600 hover:bg-green-700 p-2">
-           
-          </Button> */}
+
+          {/* Dropdown with Logout */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                {getDisplayName(user)}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem className="cursor-pointer text-red-600" onClick={handleLogout}>
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </header>
